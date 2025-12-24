@@ -10,6 +10,7 @@ use super::{Category, Tag, User};
 /// Post status enum.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default, sqlx::Type)]
 #[sqlx(type_name = "post_status", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum PostStatus {
     #[default]
     Draft,

@@ -1,40 +1,47 @@
 .PHONY: help build run dev test test-cov clean fmt lint check docker-build docker-up docker-down db-create db-drop db-reset db-migrate
+.PHONY: fe-dev fe-build fe-lint fe-preview dev-all build-all
 
 # Default target
 help:
 	@echo "Personal Website - Available Commands"
 	@echo ""
-	@echo "Development:"
-	@echo "  make dev          - Run in development mode with hot reload"
-	@echo "  make run          - Run the server"
-	@echo "  make build        - Build release binary"
-	@echo ""
-	@echo "Testing:"
-	@echo "  make test         - Run all tests"
-	@echo "  make test-cov     - Run tests with coverage report"
-	@echo ""
-	@echo "Code Quality:"
-	@echo "  make fmt          - Format code with rustfmt"
+	@echo "Backend (Rust):"
+	@echo "  make dev          - Run backend with hot reload"
+	@echo "  make run          - Run backend server"
+	@echo "  make build        - Build backend release binary"
+	@echo "  make test         - Run backend tests"
+	@echo "  make fmt          - Format backend code"
 	@echo "  make lint         - Run clippy linter"
-	@echo "  make check        - Run cargo check"
+	@echo ""
+	@echo "Frontend (React):"
+	@echo "  make fe-dev       - Run frontend dev server"
+	@echo "  make fe-build     - Build frontend for production"
+	@echo "  make fe-lint      - Lint frontend code"
+	@echo "  make fe-preview   - Preview frontend production build"
+	@echo ""
+	@echo "Full Stack:"
+	@echo "  make dev-all      - Run both backend and frontend (requires tmux)"
+	@echo "  make build-all    - Build both backend and frontend"
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-build - Build Docker image"
-	@echo "  make docker-up    - Start all services with docker-compose"
+	@echo "  make docker-up    - Start all services"
 	@echo "  make docker-down  - Stop all services"
 	@echo ""
 	@echo "Database:"
 	@echo "  make db-create    - Create database"
 	@echo "  make db-drop      - Drop database"
-	@echo "  make db-reset     - Drop and recreate database with migrations"
+	@echo "  make db-reset     - Drop, recreate and run migrations"
 	@echo "  make db-migrate   - Run all migrations"
 	@echo ""
 	@echo "Maintenance:"
-	@echo "  make clean        - Clean build artifacts"
+	@echo "  make clean        - Clean all build artifacts"
 
-# Development
+# Backend (Rust)
+# ============================================
+
 dev:
-	cargo watch -x run
+	@command -v cargo-watch >/dev/null 2>&1 && cargo watch -x run || cargo run
 
 run:
 	cargo run
@@ -42,7 +49,6 @@ run:
 build:
 	cargo build --release
 
-# Testing
 test:
 	cargo test
 
@@ -50,7 +56,6 @@ test-cov:
 	cargo llvm-cov --html
 	@echo "Coverage report generated at target/llvm-cov/html/index.html"
 
-# Code Quality
 fmt:
 	cargo fmt
 
@@ -60,7 +65,51 @@ lint:
 check:
 	cargo check
 
+# ============================================
+# Frontend (React)
+# ============================================
+
+fe-dev:
+	cd frontend && npm run dev
+
+fe-build:
+	cd frontend && npm run build
+
+fe-lint:
+	cd frontend && npm run lint
+
+fe-preview:
+	cd frontend && npm run preview
+
+fe-install:
+	cd frontend && npm install
+
+# ============================================
+# Full Stack
+# ============================================
+
+dev-all:
+	@echo "Starting backend and frontend in tmux..."
+	@echo "Backend: http://localhost:3000"
+	@echo "Frontend: http://localhost:5173"
+	@echo ""
+	@echo "Tmux shortcuts: Ctrl+b then ← or → to switch panes, Ctrl+b then d to detach"
+	@tmux kill-session -t dev 2>/dev/null || true
+	@tmux new-session -d -s dev -n main
+	@tmux send-keys -t dev 'make dev' Enter
+	@tmux split-window -h -t dev
+	@tmux send-keys -t dev 'make fe-dev' Enter
+	@tmux attach -t dev
+
+build-all: build fe-build
+	@echo "Build complete!"
+	@echo "Backend binary: target/release/personal-website"
+	@echo "Frontend dist: frontend/dist/"
+
+# ============================================
 # Docker
+# ============================================
+
 docker-build:
 	docker build -t personal-website .
 
@@ -70,7 +119,10 @@ docker-up:
 docker-down:
 	docker-compose down
 
+# ============================================
 # Database
+# ============================================
+
 DB_CONTAINER ?= postgres
 DB_USER ?= postgres
 DB_NAME ?= personal_website
@@ -92,7 +144,14 @@ db-migrate:
 db-reset: db-drop db-create db-migrate
 	@echo "Database reset complete!"
 
+# ============================================
 # Maintenance
+# ============================================
+
 clean:
 	cargo clean
+	rm -rf frontend/node_modules frontend/dist
+	@echo "Cleaned all build artifacts"
 
+install: fe-install
+	@echo "Frontend dependencies installed"

@@ -20,17 +20,18 @@ CREATE INDEX idx_users_deleted_at ON users(deleted_at);
 -- Seed default users (password: admin123)
 -- Hash generated with Argon2
 INSERT INTO users (email, password_hash, name, role_id)
-SELECT 'admin@example.com', '$argon2id$v=19$m=19456,t=2,p=1$ZG1oYXNobmFzaGRhc2Q$qqsv5TAEM9fvR+10stvbgg', 'Admin User', id
+SELECT 'admin@example.com', '$argon2id$v=19$m=19456,t=2,p=1$FW9ml7upCPwSFIHtLJWreQ$ePEWtANK6rgq9jDWkKCvXE+t2cbQ/BPtHKJdqjetV+g', 'Admin User', id
 FROM roles WHERE slug = 'admin';
 
 INSERT INTO users (email, password_hash, name, role_id)
-SELECT 'editor@example.com', '$argon2id$v=19$m=19456,t=2,p=1$ZG1oYXNobmFzaGRhc2Q$qqsv5TAEM9fvR+10stvbgg', 'Editor User', id
+SELECT 'editor@example.com', '$argon2id$v=19$m=19456,t=2,p=1$FW9ml7upCPwSFIHtLJWreQ$ePEWtANK6rgq9jDWkKCvXE+t2cbQ/BPtHKJdqjetV+g', 'Editor User', id
 FROM roles WHERE slug = 'editor';
 
 INSERT INTO users (email, password_hash, name, role_id)
-SELECT 'writer@example.com', '$argon2id$v=19$m=19456,t=2,p=1$ZG1oYXNobmFzaGRhc2Q$qqsv5TAEM9fvR+10stvbgg', 'Writer User', id
+SELECT 'writer@example.com', '$argon2id$v=19$m=19456,t=2,p=1$FW9ml7upCPwSFIHtLJWreQ$ePEWtANK6rgq9jDWkKCvXE+t2cbQ/BPtHKJdqjetV+g', 'Writer User', id
 FROM roles WHERE slug = 'writer';
 
 INSERT INTO users (email, password_hash, name, role_id)
-SELECT 'viewer@example.com', '$argon2id$v=19$m=19456,t=2,p=1$ZG1oYXNobmFzaGRhc2Q$qqsv5TAEM9fvR+10stvbgg', 'Viewer User', id
+SELECT 'viewer@example.com', '$argon2id$v=19$m=19456,t=2,p=1$FW9ml7upCPwSFIHtLJWreQ$ePEWtANK6rgq9jDWkKCvXE+t2cbQ/BPtHKJdqjetV+g', 'Viewer User', id
 FROM roles WHERE slug = 'viewer';
+

@@ -130,14 +130,17 @@ pub async fn optional_auth_middleware(
     mut request: Request,
     next: Next,
 ) -> Response {
-    if let Some(token) = extract_bearer_token(&request) {
+    let auth_user: Option<AuthUser> = if let Some(token) = extract_bearer_token(&request) {
         if let Ok(claims) = state.auth_service.validate_access_token(&token).await {
-            if let Ok(auth_user) = create_auth_user(&claims, &state).await {
-                request.extensions_mut().insert(auth_user);
-            }
+            create_auth_user(&claims, &state).await.ok()
+        } else {
+            None
         }
-    }
+    } else {
+        None
+    };
 
+    request.extensions_mut().insert(auth_user);
     next.run(request).await
 }
 

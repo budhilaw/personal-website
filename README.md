@@ -3,7 +3,7 @@
 A full-stack personal website built as a monorepo.
 
 **Backend:** Rust (Axum, PostgreSQL, Redis) with permission-based RBAC and blog CMS.  
-**Frontend:** React (coming soon)
+**Frontend:** React + TypeScript + React Router + TailwindCSS v4
 
 ## Getting Started
 
